@@ -1,0 +1,17 @@
+# Virtual environment
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE configurations
+.vscode/
+.idea/
+
+# Local databases / generated files
+feedback_data.json
+.gemini/
+.env

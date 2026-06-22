@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI - Prompt Engineering Assistant</title>
+    <!-- Use standard URL scheme for CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand">
+                <span class="brand-icon"><i class="icon-sparkles"></i></span>
+                <h1 class="brand-name">Nexus AI</h1>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li>
+                        <a onclick="switchPage('playground')" id="nav-playground" class="nav-item active">
+                            <i class="icon-home"></i> AI Playground
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="switchPage('analytics')" id="nav-analytics" class="nav-item">
+                            <i class="icon-analytics"></i> Feedback Analytics
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="switchPage('presentation')" id="nav-presentation" class="nav-item">
+                            <i class="icon-presentation"></i> Interactive PPT
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="switchPage('docs')" id="nav-docs" class="nav-item">
+                            <i class="icon-docs"></i> Documentation
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="sidebar-footer">
+            <p>VaultOfCodes Internship</p>
+            <p style="margin-top: 4px; opacity: 0.6;">AI Assistant v1.0.0</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        
+        <!-- PAGE 1: AI PLAYGROUND -->
+        <section id="page-playground" class="page active">
+            <div class="page-header">
+                <h2>AI Assistant Playground</h2>
+                <p>Select a core function, choose an engineered prompt style, and input your text.</p>
+            </div>
+            
+            <div class="glass-card">
+                <!-- Function Switcher -->
+                <div class="tab-container">
+                    <button type="button" class="tab-btn active" onclick="switchFunction('qa')" id="tab-qa">
+                        <i class="icon-qa"></i> Question Answering
+                    </button>
+                    <button type="button" class="tab-btn" onclick="switchFunction('summary')" id="tab-summary">
+                        <i class="icon-summary"></i> Summarization
+                    </button>
+                    <button type="button" class="tab-btn" onclick="switchFunction('creative')" id="tab-creative">
+                        <i class="icon-creative"></i> Content Generator
+                    </button>
+                    <button type="button" class="tab-btn" onclick="switchFunction('advisor')" id="tab-advisor">
+                        <i class="icon-advisor"></i> Study Advisor
+                    </button>
+                </div>
+                
+                <form id="generate-form" onsubmit="handleGenerate(event)">
+                    <!-- Style Variant Grid -->
+                    <div class="form-group">
+                        <label class="form-label">Select Prompt Engineering Variant</label>
+                        <div class="variant-grid" id="variant-selector-grid">
+                            <!-- Populated dynamically by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Text Input Area -->
+                    <div class="form-group">
+                        <label class="form-label" id="input-label">User Query</label>
+                        <textarea id="user-input" required placeholder="Enter your text here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <i class="icon-play"></i> Generate Response
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="spinner-container" id="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <!-- Output Workspace -->
+            <div class="output-section" id="output-workspace">
+                <div class="glass-card response-card">
+                    <div class="response-header">
+                        <div class="response-title">
+                            <i class="icon-sparkles"></i> AI Response
+                        </div>
+                        <button type="button" class="copy-btn" onclick="copyResponseText()">
+                            Copy Response
+                        </button>
+                    </div>
+                    <div class="response-text" id="ai-response-content">
+                        <!-- AI text will render here -->
+                    </div>
+                </div>
+                
+                <!-- Prompt Inspector Accordion -->
+                <div class="inspector-card" id="prompt-inspector">
+                    <div class="inspector-header" onclick="togglePromptInspector()">
+                        <div class="inspector-title">
+                            <i class="icon-info"></i> Prompt Engineer Inspector
+                        </div>
+                        <span class="inspector-toggle-icon"><i class="icon-chevron-down"></i></span>
+                    </div>
+                    <div class="inspector-body">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                            The raw prompt below represents the engineered system wrapper combined with your input:
+                        </p>
+                        <div class="inspector-prompt-box" id="inspector-raw-prompt">
+                            <!-- Raw prompt will render here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Loop Widget -->
+                <div class="feedback-widget" id="feedback-widget">
+                    <div class="feedback-question">Was this response helpful?</div>
+                    <div class="feedback-buttons">
+                        <button type="button" class="feedback-btn" onclick="setFeedbackRating('like')" id="feed-like-btn">
+                            <i class="icon-like"></i> Helpful
+                        </button>
+                        <button type="button" class="feedback-btn" onclick="setFeedbackRating('dislike')" id="feed-dislike-btn">
+                            <i class="icon-dislike"></i> Not Helpful
+                        </button>
+                    </div>
+                    
+                    <div class="feedback-comment-box" id="feedback-comment-container">
+                        <input type="text" class="comment-input" id="feedback-comment" placeholder="Optional: What could be improved?">
+                        <button type="button" class="btn-submit-feedback" onclick="submitFeedback()">
+                            Submit Review
+                        </button>
+                    </div>
+                    
+                    <div class="feedback-thankyou" id="feedback-thankyou-msg">
+                        <span>✓ Thank you for your feedback! This data helps refine our prompt templates.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- PAGE 2: FEEDBACK ANALYTICS -->
+        <section id="page-analytics" class="page">
+            <div class="page-header">
+                <h2>Feedback Analytics Dashboard</h2>
+                <p>Analyze how users evaluate the different prompt engineering models and functions.</p>
+            </div>
+            
+            <div class="analytics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Total API Calls</span>
+                    <span class="metric-value" id="stat-total-calls">0</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Helpful Rating</span>
+                    <span class="metric-value" id="stat-helpful-rate">0%</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total Comments</span>
+                    <span class="metric-value" id="stat-total-comments">0</span>
+                </div>
+            </div>
+            
+            <div class="glass-card">
+                <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.5rem; color: white;">
+                    Helpfulness Rate by Function
+                </h3>
+                <div class="charts-container" id="analytics-charts-list">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+            
+            <div class="glass-card">
+                <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.25rem; color: white;">
+                    Recent Prompt Engineering Activity Log
+                </h3>
+                <div class="logs-table-container">
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Module</th>
+                                <th>Prompt Variant Used</th>
+                                <th>Input Snippet</th>
+                                <th>User Rating</th>
+                                <th>Review Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <!-- Loaded dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- PAGE 3: INTERACTIVE PPT PLAYER -->
+        <section id="page-presentation" class="page">
+            <div class="page-header">
+                <h2>Interactive Project Presentation</h2>
+                <p>Fulfill documentation requirements using this presentation slideshow detailing our system design.</p>
+            </div>
+            
+            <div class="slideshow-container">
+                <!-- Slide 1 -->
+                <div class="slide active" id="slide-1">
+                    <div class="slide-number">01 / 05</div>
+                    <div class="slide-subtitle">VaultOfCodes Internship Project</div>
+                    <h3 class="slide-title">Major Project:<br>AI Assistant Development</h3>
+                    <div class="slide-content">
+                        <p>Welcome to the project presentation. This AI Assistant is a comprehensive showcase of prompt engineering and feedback mechanics.</p>
+                        <p style="margin-top: 1rem;"><strong>Developer Internship Task</strong></p>
+                        <ul>
+                            <li><strong>Objective:</strong> Design and build an AI Assistant capable of multiple distinct prompt-based tasks.</li>
+                            <li><strong>Key Features:</strong> 4 modules, 12 prompt variants, active feedback loop, and live analytics dashboard.</li>
+                            <li><strong>Tech Stack:</strong> Python, Flask, Google Gemini API, Vanilla CSS.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="slide" id="slide-2">
+                    <div class="slide-number">02 / 05</div>
+                    <div class="slide-subtitle">Functional Architecture</div>
+                    <h3 class="slide-title">Core AI Assistant Modules</h3>
+                    <div class="slide-content">
+                        <p>We designed the assistant around 4 distinct functions to test prompt engineering capabilities across different workloads:</p>
+                        <ul style="margin-top: 1rem;">
+                            <li><strong>Question Answering (Q&A):</strong> Handles factual questions.</li>
+                            <li><strong>Text Summarizer:</strong> Condenses long articles into digestible overviews.</li>
+                            <li><strong>Content Generator:</strong> Creates narrative stories, poems, or concept outlines.</li>
+                            <li><strong>Study Advisor:</strong> Provides study schedules, study plans, or critical analyses of learning approaches.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Slide 3 -->
+                <div class="slide" id="slide-3">
+                    <div class="slide-number">03 / 05</div>
+                    <div class="slide-subtitle">Prompt Engineering Strategy</div>
+                    <h3 class="slide-title">Crafting and Testing Prompt Variations</h3>
+                    <div class="slide-content">
+                        <p>For each of the 4 functions, we engineered <strong>3 separate prompt variations</strong> that guide the LLM's behavioral footprint:</p>
+                        <ul style="margin-top: 0.75rem;">
+                            <li><strong>Style Variation:</strong> Altering prompt tone between direct (factual), explainer (pedagogical), and bulleted outlines (structured).</li>
+                            <li><strong>Length Constraint:</strong> Restricting response sizes (e.g. "under 80 words" vs. "in-depth breakdown").</li>
+                            <li><strong>Contextual Frameworks:</strong> Assigning system-roles like "business consultant", "novelist", or "academic coach" to inject domain knowledge.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Slide 4 -->
+                <div class="slide" id="slide-4">
+                    <div class="slide-number">04 / 05</div>
+                    <div class="slide-subtitle">User Feedback Loop</div>
+                    <h3 class="slide-title">Collecting Feedback & Tuning Prompts</h3>
+                    <div class="slide-content">
+                        <p>Quality prompt engineering requires iterative optimization. This system implements an end-to-end feedback loop:</p>
+                        <ul style="margin-top: 1rem;">
+                            <li><strong>Direct Metrics:</strong> Users rating responses with "Helpful" / "Not Helpful" buttons.</li>
+                            <li><strong>Qualitative Logs:</strong> Optional comments field to capture specific suggestions.</li>
+                            <li><strong>Analytics Database:</strong> Logs are stored in a persistent local database, calculating helpfulness statistics per style variant.</li>
+                            <li><strong>Prompt Tuning:</strong> Developers can inspect logs to identify which style variants underperform and refine the system instructions.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Slide 5 -->
+                <div class="slide" id="slide-5">
+                    <div class="slide-number">05 / 05</div>
+                    <div class="slide-subtitle">User Guide</div>
+                    <h3 class="slide-title">How to Use the Assistant</h3>
+                    <div class="slide-content">
+                        <p>Follow these quick steps to interact with the application:</p>
+                        <ol style="margin-left: 1.5rem; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li>Navigate to the <strong>AI Playground</strong> using the sidebar.</li>
+                            <li>Select your desired function from the top tabs.</li>
+                            <li>Pick a <strong>Prompt Engineering Variant</strong> card (like Factual or Explainer).</li>
+                            <li>Enter your input and hit <strong>Generate Response</strong>.</li>
+                            <li>Toggle the <strong>Prompt Inspector</strong> to view the raw system template, and rate the response to update the dashboard.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slides Navigation Controls -->
+            <div class="slideshow-controls">
+                <button type="button" class="slide-btn" onclick="prevSlide()">◀</button>
+                <div class="slide-dots" id="slide-dots-container">
+                    <span class="slide-dot active" onclick="goToSlide(1)"></span>
+                    <span class="slide-dot" onclick="goToSlide(2)"></span>
+                    <span class="slide-dot" onclick="goToSlide(3)"></span>
+                    <span class="slide-dot" onclick="goToSlide(4)"></span>
+                    <span class="slide-dot" onclick="goToSlide(5)"></span>
+                </div>
+                <button type="button" class="slide-btn" onclick="nextSlide()">▶</button>
+            </div>
+        </section>
+        
+        <!-- PAGE 4: DOCUMENTATION -->
+        <section id="page-docs" class="page">
+            <div class="page-header">
+                <h2>Documentation & User Guide</h2>
+                <p>Written guide detailing prompt blueprints, engineering structures, and system configurations.</p>
+            </div>
+            
+            <div class="glass-card">
+                <div class="doc-section">
+                    <h3><i class="icon-sparkles"></i> Prompt Engineering Overview</h3>
+                    <p>
+                        Prompt engineering is the practice of structuring and phrasing instructions to guide large language models (LLMs) to output high-quality, relevant results. Instead of simply sending the raw user input directly to the model, this system acts as a middleware wrapping the user input in tailored system contexts.
+                    </p>
+                </div>
+                
+                <div class="doc-section">
+                    <h3><i class="icon-docs"></i> Active Prompt Templates</h3>
+                    <p>
+                        Below is a reference guide of the system prompt layouts engineered for each core module:
+                    </p>
+                    
+                    <table class="doc-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Function</th>
+                                <th style="width: 25%;">Style Style</th>
+                                <th>System Wrapper Blueprint</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Question Answering</strong></td>
+                                <td>Factual & Direct<br>Comprehensive Explainer<br>Structured Outline</td>
+                                <td>"You are a factual assistant. Provide a direct, concise... (under 2 paragraphs)"<br>"You are an educator. Provide a comprehensive, detailed explanation..."<br>"You are an analytical assistant. Break down the answer into structured bullet points..."</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Summarization</strong></td>
+                                <td>Short Summary<br>Key Takeaways<br>Executive Briefing</td>
+                                <td>"You are a summarization tool. Condense text to under 80 words..."<br>"You are an expert analyst. Extract up to 5 key takeaways in a bullet list..."<br>"You are a business consultant. Write a professional brief with summary, themes, and implications..."</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Content Generator</strong></td>
+                                <td>Poetic & Vivid<br>Narrative Story<br>Minimalist Expression</td>
+                                <td>"You are a poet. Write descriptive content with rich imagery and metaphors..."<br>"You are a novelist. Write an engaging story with clear setting, character, and plot..."<br>"You are a minimalist writer. Write a haiku or 1-sentence micro-fiction..."</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Study Advisor</strong></td>
+                                <td>Empathetic Coach<br>Structured Roadmap<br>Critique & Troubleshoot</td>
+                                <td>"You are a supportive academic coach. Provide encouraging, warm, motivational advice..."<br>"You are a curriculum architect. Break down the goal into a week-by-week roadmap..."<br>"You are a critical reviewer. Evaluate learning methods and identify pitfalls..."</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="doc-section">
+                    <h3><i class="icon-info"></i> Project Verification and local setup</h3>
+                    <p>
+                        To run this project locally, ensure you have the virtual environment activated:
+                    </p>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #a855f7; border: 1px solid var(--border-color); overflow-x: auto;">
+# 1. Open Terminal in your project workspace
+# 2. Activate python virtual environment
+.\venv\Scripts\activate
+
+# 3. Run the development server
+python app.py
+
+# 4. Open in browser
+http://127.0.0.1:5000
+                    </pre>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+</div>
+
+<!-- Toast Feedback Notification -->
+<div class="toast" id="toast-notification">✓ Action Completed!</div>
+
+<!-- Client-side script logic -->
+<script>
+    // System definitions of variants per function
+    const VARIANTS_DB = {
+        qa: [
+            { id: "1", name: "Factual & Direct", desc: "Short, direct, factual, and straight to the point." },
+            { id: "2", name: "Comprehensive Explainer", desc: "In-depth detail, contextual background, and example-rich." },
+            { id: "3", name: "Structured Outline", desc: "Clean bullet points highlighting key concepts." }
+        ],
+        summary: [
+            { id: "1", name: "Short Summary", desc: "Condenses source text into a single paragraph under 80 words." },
+            { id: "2", name: "Key Takeaways", desc: "Lists up to 5 clear, action-oriented bullet points." },
+            { id: "3", name: "Executive Briefing", desc: "Professional corporate outline containing key themes and implications." }
+        ],
+        creative: [
+            { id: "1", name: "Poetic & Vivid", desc: "Descriptive imagery, expressive tone, and deep metaphors." },
+            { id: "2", name: "Narrative Story", desc: "Sleek story arc complete with setting and character progression." },
+            { id: "3", name: "Minimalist Expression", desc: "A haiku or one-sentence micro-fiction story." }
+        ],
+        advisor: [
+            { id: "1", name: "Empathetic Coach", desc: "Encouraging, warm guidance to motivate and support student focus." },
+            { id: "2", name: "Structured Roadmap", desc: "Week-by-week syllabus outlining skills, milestones, and practices." },
+            { id: "3", name: "Critique & Troubleshoot", desc: "Analyzes learning habits to expose pitfalls and suggest remedies." }
+        ]
+    };
+
+    const INPUT_LABELS = {
+        qa: "Ask your question",
+        summary: "Enter text to summarize",
+        creative: "Enter content topic or writing prompt",
+        advisor: "Specify your learning goal or current study strategy"
+    };
+
+    const INPUT_PLACEHOLDERS = {
+        qa: "e.g., What is quantum computing and how does it work?",
+        summary: "Paste an article, text fragment, or essay content here...",
+        creative: "e.g., A futuristic programmer discovering a bug in reality...",
+        advisor: "e.g., I want to learn Flask web development in 1 month, or my current study technique is cramming flashcards."
+    };
+
+    // State Variables
+    let activeFunction = "qa";
+    let selectedVariant = "1";
+    
+    // Result payload state for feedback submission
+    let currentPayload = {
+        function: "",
+        style: "",
+        input_text: "",
+        raw_prompt: "",
+        response_text: ""
+    };
+    
+    let activeFeedbackRating = null;
+
+    // Load initial function configurations
+    document.addEventListener("DOMContentLoaded", () => {
+        switchFunction("qa");
+        loadAnalytics();
+    });
+
+    // Navigation Switcher
+    function switchPage(pageId) {
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+        
+        document.getElementById(`page-${pageId}`).classList.add("active");
+        document.getElementById(`nav-${pageId}`).classList.add("active");
+
+        if (pageId === "analytics") {
+            loadAnalytics();
+        }
+    }
+
+    // Function tabs controller
+    function switchFunction(funcId) {
+        activeFunction = funcId;
+        
+        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+        document.getElementById(`tab-${funcId}`).classList.add("active");
+
+        // Update labels and placeholders
+        document.getElementById("input-label").innerText = INPUT_LABELS[funcId];
+        document.getElementById("user-input").placeholder = INPUT_PLACEHOLDERS[funcId];
+
+        // Populate prompt variant selectors
+        const grid = document.getElementById("variant-selector-grid");
+        grid.innerHTML = "";
+        
+        VARIANTS_DB[funcId].forEach((variant, index) => {
+            const isSelected = index === 0;
+            if (isSelected) selectedVariant = variant.id;
+
+            const card = document.createElement("div");
+            card.className = `variant-card ${isSelected ? 'selected' : ''}`;
+            card.id = `variant-${variant.id}`;
+            card.onclick = () => selectVariant(variant.id);
+            card.innerHTML = `
+                <div class="variant-title">${variant.name}</div>
+                <div class="variant-desc">${variant.desc}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Prompt selection controller
+    function selectVariant(variantId) {
+        selectedVariant = variantId;
+        document.querySelectorAll(".variant-card").forEach(card => card.classList.remove("selected"));
+        document.getElementById(`variant-${variantId}`).classList.add("selected");
+    }
+
+    // Submit input to backend API
+    async function handleGenerate(e) {
+        e.preventDefault();
+        
+        const textInput = document.getElementById("user-input").value.trim();
+        if (!textInput) return;
+
+        // UI Updates: Disable buttons, show spinner
+        const submitBtn = document.getElementById("submit-btn");
+        submitBtn.disabled = true;
+        document.getElementById("loading-spinner").classList.add("active");
+        document.getElementById("output-workspace").classList.remove("active");
+
+        // Reset feedback form
+        activeFeedbackRating = null;
+        document.getElementById("feed-like-btn").classList.remove("active-like");
+        document.getElementById("feed-dislike-btn").classList.remove("active-dislike");
+        document.getElementById("feedback-comment-container").classList.remove("visible");
+        document.getElementById("feedback-thankyou-msg").style.display = "none";
+        document.getElementById("feedback-comment").value = "";
+
+        try {
+            const response = await fetch("/api/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    function: activeFunction,
+                    style: selectedVariant,
+                    input_text: textInput
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Populate workspace output
+                document.getElementById("ai-response-content").innerText = data.response;
+                document.getElementById("inspector-raw-prompt").innerText = data.raw_prompt;
+                
+                // Cache payload state for feedback submission
+                currentPayload = {
+                    function: activeFunction,
+                    style: selectedVariant,
+                    input_text: textInput,
+                    raw_prompt: data.raw_prompt,
+                    response_text: data.response
+                };
+
+                // Close inspector accordion by default
+                document.getElementById("prompt-inspector").classList.remove("open");
+
+                // Display result card
+                document.getElementById("output-workspace").classList.add("active");
+                
+                // Scroll output into view smoothly
+                document.getElementById("output-workspace").scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert("API Generation failed: " + data.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error communicating with application backend: " + err);
+        } finally {
+            submitBtn.disabled = false;
+            document.getElementById("loading-spinner").classList.remove("active");
+        }
+    }
+
+    // Toggle Prompt Inspector Accordion
+    function togglePromptInspector() {
+        document.getElementById("prompt-inspector").classList.toggle("open");
+    }
+
+    // Copy response text
+    function copyResponseText() {
+        const text = document.getElementById("ai-response-content").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("✓ Response copied to clipboard!");
+        });
+    }
+
+    // Feedback rating selection
+    function setFeedbackRating(rating) {
+        activeFeedbackRating = rating;
+        
+        const likeBtn = document.getElementById("feed-like-btn");
+        const dislikeBtn = document.getElementById("feed-dislike-btn");
+        
+        if (rating === "like") {
+            likeBtn.classList.add("active-like");
+            dislikeBtn.classList.remove("active-dislike");
+            // Likes don't strictly require comments, show comment box or just auto-submit
+            document.getElementById("feedback-comment-container").classList.add("visible");
+        } else {
+            dislikeBtn.classList.add("active-dislike");
+            likeBtn.classList.remove("active-like");
+            document.getElementById("feedback-comment-container").classList.add("visible");
+        }
+    }
+
+    // Submit Feedback Loop to API
+    async function submitFeedback() {
+        if (!activeFeedbackRating) return;
+        
+        const comment = document.getElementById("feedback-comment").value.trim();
+        
+        try {
+            const response = await fetch("/api/feedback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...currentPayload,
+                    rating: activeFeedbackRating,
+                    comment: comment
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // UI transition
+                document.getElementById("feedback-comment-container").classList.remove("visible");
+                document.getElementById("feedback-thankyou-msg").style.display = "flex";
+                showToast("✓ Thank you for submitting feedback!");
+            }
+        } catch (err) {
+            console.error("Feedback submit error: ", err);
+        }
+    }
+
+    // Retrieve analytics metrics from API
+    async function loadAnalytics() {
+        try {
+            const response = await fetch("/api/analytics");
+            const data = await response.json();
+            
+            // Populate metrics
+            document.getElementById("stat-total-calls").innerText = data.total_requests;
+            document.getElementById("stat-helpful-rate").innerText = data.helpfulness_rate + "%";
+            document.getElementById("stat-total-comments").innerText = data.likes + data.dislikes > 0 ? data.likes : 0; // comments counter
+            
+            let commentsCount = data.recent_logs.filter(log => log.comment).length;
+            document.getElementById("stat-total-comments").innerText = commentsCount;
+
+            // Generate progress charts
+            const chartsContainer = document.getElementById("analytics-charts-list");
+            chartsContainer.innerHTML = "";
+
+            const functionLabels = {
+                qa: "Question Answering",
+                summary: "Text Summarization",
+                creative: "Creative Content Generator",
+                advisor: "Study & Career Advisor"
+            };
+
+            for (const [key, stats] of Object.entries(data.function_stats)) {
+                const chartRow = document.createElement("div");
+                chartRow.className = "chart-bar-row";
+                chartRow.innerHTML = `
+                    <div class="chart-bar-info">
+                        <span style="font-weight: 500;">${functionLabels[key]} (Calls: ${stats.total})</span>
+                        <span style="font-weight: 600; color: var(--accent-teal);">${stats.rate}% Helpful</span>
+                    </div>
+                    <div class="chart-bar-bg">
+                        <div class="chart-bar-fill" id="fill-bar-${key}"></div>
+                    </div>
+                `;
+                chartsContainer.appendChild(chartRow);
+                
+                // Animate progress width
+                setTimeout(() => {
+                    const fill = document.getElementById(`fill-bar-${key}`);
+                    if (fill) fill.style.width = stats.rate + "%";
+                }, 100);
+            }
+
+            // Populate activity logs table
+            const tableBody = document.getElementById("logs-table-body");
+            tableBody.innerHTML = "";
+
+            if (data.recent_logs.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No feedback logs recorded yet. Run a prompt query in the playground and rate the output!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                data.recent_logs.forEach(log => {
+                    const tr = document.createElement("tr");
+                    
+                    // Simple relative time or extract time
+                    const time = new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const date = new Date(log.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    
+                    const ratingBadge = log.rating === "like" 
+                        ? `<span class="rating-badge like">👍 Helpful</span>`
+                        : `<span class="rating-badge dislike">👎 Not Helpful</span>`;
+
+                    tr.innerHTML = `
+                        <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted);">
+                            ${date} ${time}
+                        </td>
+                        <td><strong style="font-size: 0.8rem; letter-spacing: 0.5px;">${log.function}</strong></td>
+                        <td style="color: var(--text-primary);">${log.style_name}</td>
+                        <td style="font-size: 0.85rem; color: var(--text-secondary); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            "${log.input_text}"
+                        </td>
+                        <td>${ratingBadge}</td>
+                        <td style="font-style: italic; color: var(--text-secondary); font-size: 0.85rem;">
+                            ${log.comment ? `"${log.comment}"` : `<span style="color: var(--text-muted)">—</span>`}
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+        } catch (err) {
+            console.error("Error fetching analytics data: ", err);
+        }
+    }
+
+    // Interactive presentation slider controller
+    let currentSlideIndex = 1;
+    const totalSlides = 5;
+
+    function goToSlide(slideIndex) {
+        if (slideIndex < 1 || slideIndex > totalSlides) return;
+        
+        currentSlideIndex = slideIndex;
+        
+        document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
+        document.getElementById(`slide-${slideIndex}`).classList.add("active");
+        
+        const dots = document.querySelectorAll(".slide-dot");
+        dots.forEach(d => d.classList.remove("active"));
+        dots[slideIndex - 1].classList.add("active");
+    }
+
+    function nextSlide() {
+        let index = currentSlideIndex + 1;
+        if (index > totalSlides) index = 1; // loop
+        goToSlide(index);
+    }
+
+    function prevSlide() {
+        let index = currentSlideIndex - 1;
+        if (index < 1) index = totalSlides; // loop
+        goToSlide(index);
+    }
+
+    // Custom toast notices
+    function showToast(message) {
+        const toast = document.getElementById("toast-notification");
+        toast.innerText = message;
+        toast.classList.add("show");
+        
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
