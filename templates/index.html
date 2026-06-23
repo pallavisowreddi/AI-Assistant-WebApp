@@ -30,11 +30,7 @@
                             <i class="icon-analytics"></i> Feedback Analytics
                         </a>
                     </li>
-                    <li>
-                        <a onclick="switchPage('presentation')" id="nav-presentation" class="nav-item">
-                            <i class="icon-presentation"></i> Interactive PPT
-                        </a>
-                    </li>
+
                     <li>
                         <a onclick="switchPage('docs')" id="nav-docs" class="nav-item">
                             <i class="icon-docs"></i> Documentation
@@ -215,109 +211,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </section>
-        
-        <!-- PAGE 3: INTERACTIVE PPT PLAYER -->
-        <section id="page-presentation" class="page">
-            <div class="page-header">
-                <h2>Interactive Project Presentation</h2>
-                <p>Fulfill documentation requirements using this presentation slideshow detailing our system design.</p>
-            </div>
-            
-            <div class="slideshow-container">
-                <!-- Slide 1 -->
-                <div class="slide active" id="slide-1">
-                    <div class="slide-number">01 / 05</div>
-                    <div class="slide-subtitle">VaultOfCodes Internship Project</div>
-                    <h3 class="slide-title">Major Project:<br>AI Assistant Development</h3>
-                    <div class="slide-content">
-                        <p>Welcome to the project presentation. This AI Assistant is a comprehensive showcase of prompt engineering and feedback mechanics.</p>
-                        <p style="margin-top: 1rem;"><strong>Developer Internship Task</strong></p>
-                        <ul>
-                            <li><strong>Objective:</strong> Design and build an AI Assistant capable of multiple distinct prompt-based tasks.</li>
-                            <li><strong>Key Features:</strong> 4 modules, 12 prompt variants, active feedback loop, and live analytics dashboard.</li>
-                            <li><strong>Tech Stack:</strong> Python, Flask, Google Gemini API, Vanilla CSS.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Slide 2 -->
-                <div class="slide" id="slide-2">
-                    <div class="slide-number">02 / 05</div>
-                    <div class="slide-subtitle">Functional Architecture</div>
-                    <h3 class="slide-title">Core AI Assistant Modules</h3>
-                    <div class="slide-content">
-                        <p>We designed the assistant around 4 distinct functions to test prompt engineering capabilities across different workloads:</p>
-                        <ul style="margin-top: 1rem;">
-                            <li><strong>Question Answering (Q&A):</strong> Handles factual questions.</li>
-                            <li><strong>Text Summarizer:</strong> Condenses long articles into digestible overviews.</li>
-                            <li><strong>Content Generator:</strong> Creates narrative stories, poems, or concept outlines.</li>
-                            <li><strong>Study Advisor:</strong> Provides study schedules, study plans, or critical analyses of learning approaches.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Slide 3 -->
-                <div class="slide" id="slide-3">
-                    <div class="slide-number">03 / 05</div>
-                    <div class="slide-subtitle">Prompt Engineering Strategy</div>
-                    <h3 class="slide-title">Crafting and Testing Prompt Variations</h3>
-                    <div class="slide-content">
-                        <p>For each of the 4 functions, we engineered <strong>3 separate prompt variations</strong> that guide the LLM's behavioral footprint:</p>
-                        <ul style="margin-top: 0.75rem;">
-                            <li><strong>Style Variation:</strong> Altering prompt tone between direct (factual), explainer (pedagogical), and bulleted outlines (structured).</li>
-                            <li><strong>Length Constraint:</strong> Restricting response sizes (e.g. "under 80 words" vs. "in-depth breakdown").</li>
-                            <li><strong>Contextual Frameworks:</strong> Assigning system-roles like "business consultant", "novelist", or "academic coach" to inject domain knowledge.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Slide 4 -->
-                <div class="slide" id="slide-4">
-                    <div class="slide-number">04 / 05</div>
-                    <div class="slide-subtitle">User Feedback Loop</div>
-                    <h3 class="slide-title">Collecting Feedback & Tuning Prompts</h3>
-                    <div class="slide-content">
-                        <p>Quality prompt engineering requires iterative optimization. This system implements an end-to-end feedback loop:</p>
-                        <ul style="margin-top: 1rem;">
-                            <li><strong>Direct Metrics:</strong> Users rating responses with "Helpful" / "Not Helpful" buttons.</li>
-                            <li><strong>Qualitative Logs:</strong> Optional comments field to capture specific suggestions.</li>
-                            <li><strong>Analytics Database:</strong> Logs are stored in a persistent local database, calculating helpfulness statistics per style variant.</li>
-                            <li><strong>Prompt Tuning:</strong> Developers can inspect logs to identify which style variants underperform and refine the system instructions.</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Slide 5 -->
-                <div class="slide" id="slide-5">
-                    <div class="slide-number">05 / 05</div>
-                    <div class="slide-subtitle">User Guide</div>
-                    <h3 class="slide-title">How to Use the Assistant</h3>
-                    <div class="slide-content">
-                        <p>Follow these quick steps to interact with the application:</p>
-                        <ol style="margin-left: 1.5rem; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <li>Navigate to the <strong>AI Playground</strong> using the sidebar.</li>
-                            <li>Select your desired function from the top tabs.</li>
-                            <li>Pick a <strong>Prompt Engineering Variant</strong> card (like Factual or Explainer).</li>
-                            <li>Enter your input and hit <strong>Generate Response</strong>.</li>
-                            <li>Toggle the <strong>Prompt Inspector</strong> to view the raw system template, and rate the response to update the dashboard.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Slides Navigation Controls -->
-            <div class="slideshow-controls">
-                <button type="button" class="slide-btn" onclick="prevSlide()">◀</button>
-                <div class="slide-dots" id="slide-dots-container">
-                    <span class="slide-dot active" onclick="goToSlide(1)"></span>
-                    <span class="slide-dot" onclick="goToSlide(2)"></span>
-                    <span class="slide-dot" onclick="goToSlide(3)"></span>
-                    <span class="slide-dot" onclick="goToSlide(4)"></span>
-                    <span class="slide-dot" onclick="goToSlide(5)"></span>
-                </div>
-                <button type="button" class="slide-btn" onclick="nextSlide()">▶</button>
             </div>
         </section>
         
@@ -733,34 +626,7 @@ http://127.0.0.1:5000
         }
     }
 
-    // Interactive presentation slider controller
-    let currentSlideIndex = 1;
-    const totalSlides = 5;
 
-    function goToSlide(slideIndex) {
-        if (slideIndex < 1 || slideIndex > totalSlides) return;
-        
-        currentSlideIndex = slideIndex;
-        
-        document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
-        document.getElementById(`slide-${slideIndex}`).classList.add("active");
-        
-        const dots = document.querySelectorAll(".slide-dot");
-        dots.forEach(d => d.classList.remove("active"));
-        dots[slideIndex - 1].classList.add("active");
-    }
-
-    function nextSlide() {
-        let index = currentSlideIndex + 1;
-        if (index > totalSlides) index = 1; // loop
-        goToSlide(index);
-    }
-
-    function prevSlide() {
-        let index = currentSlideIndex - 1;
-        if (index < 1) index = totalSlides; // loop
-        goToSlide(index);
-    }
 
     // Custom toast notices
     function showToast(message) {
