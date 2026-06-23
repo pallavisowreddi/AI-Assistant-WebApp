@@ -124,9 +124,14 @@
                         <span class="inspector-toggle-icon"><i class="icon-chevron-down"></i></span>
                     </div>
                     <div class="inspector-body">
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-                            The raw prompt below represents the engineered system wrapper combined with your input:
-                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">
+                                The raw prompt below represents the engineered system wrapper combined with your input:
+                            </p>
+                            <button type="button" class="copy-btn" onclick="copyInspectorPrompt()" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                                Copy Prompt
+                            </button>
+                        </div>
                         <div class="inspector-prompt-box" id="inspector-raw-prompt">
                             <!-- Raw prompt will render here -->
                         </div>
@@ -191,9 +196,14 @@
             </div>
             
             <div class="glass-card">
-                <h3 style="font-size: 1.15rem; font-weight: 600; margin-bottom: 1.25rem; color: white;">
-                    Recent Prompt Engineering Activity Log
-                </h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="font-size: 1.15rem; font-weight: 600; color: white; margin: 0;">
+                        Recent Prompt Engineering Activity Log
+                    </h3>
+                    <button type="button" class="copy-btn" onclick="exportLogsToCSV()" style="background: var(--primary); color: white; border: none; font-size: 0.8rem; font-weight: 600; padding: 0.5rem 1rem;">
+                        Export Logs (CSV)
+                    </button>
+                </div>
                 <div class="logs-table-container">
                     <table class="logs-table">
                         <thead>
@@ -626,7 +636,57 @@ http://127.0.0.1:5000
         }
     }
 
+    // Copy engineered prompt from inspector
+    function copyInspectorPrompt() {
+        const text = document.getElementById("inspector-raw-prompt").innerText;
+        if (!text) {
+            showToast("No prompt to copy!");
+            return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("✓ Prompt copied to clipboard!");
+        });
+    }
 
+    // Export feedback logs as CSV file
+    async function exportLogsToCSV() {
+        try {
+            const response = await fetch("/api/analytics");
+            const data = await response.json();
+            
+            if (!data.recent_logs || data.recent_logs.length === 0) {
+                showToast("No logs to export!");
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Timestamp,Module,Prompt Variant,Input Snippet,Rating,Comment\n";
+            
+            data.recent_logs.forEach(log => {
+                let row = [
+                    log.timestamp,
+                    log.function,
+                    log.style_name,
+                    `"${log.input_text.replace(/"/g, '""')}"`,
+                    log.rating,
+                    `"${(log.comment || '').replace(/"/g, '""')}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "prompt_feedback_logs.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("✓ CSV exported successfully!");
+        } catch (err) {
+            console.error("Export failed:", err);
+            showToast("Error exporting CSV!");
+        }
+    }
 
     // Custom toast notices
     function showToast(message) {
