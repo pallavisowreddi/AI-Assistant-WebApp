@@ -990,7 +990,7 @@ i.icon-chevron-down::before { content: "▼"; }
 i.icon-info::before { content: "ℹ️"; }
 
 /* Responsive adjustments */
-@media (max-width: 992px) {
+@media (max-width: 768px) {
     .app-container {
         grid-template-columns: 1fr;
     }
